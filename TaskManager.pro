@@ -8,15 +8,23 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += $$PWD/headers
+
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    $$PWD/sources/*.cpp \
+    # task_handler.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    $$PWD/headers/*.h \
+    # task_handler.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    $$PWD/ui/*.ui \
+    # task_handler.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

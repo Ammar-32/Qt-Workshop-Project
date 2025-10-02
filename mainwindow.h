@@ -19,5 +19,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+private slots:
+    void adding_task();
 };
 #endif // MAINWINDOW_H
