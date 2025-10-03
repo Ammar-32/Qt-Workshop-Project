@@ -31,6 +31,16 @@ QDate AddTaskDialog::due_date() const
     return ui->dateEdit->date();
 }
 
+void AddTaskDialog::set_task_name(const QString &name)
+{
+    ui->task_name->setPlainText(name);
+}
+
+void AddTaskDialog::set_due_date(const QDate &date)
+{
+    ui->dateEdit->setDate(date);
+}
+
 void AddTaskDialog::validate()
 {
     QString name = ui->task_name->toPlainText();

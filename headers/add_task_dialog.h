@@ -19,6 +19,10 @@ public:
 
     QDate due_date() const;
 
+    void set_task_name(const QString &name);
+
+    void set_due_date(const QDate &date);
+
 private:
     Ui::AddTaskDialog *ui;
 

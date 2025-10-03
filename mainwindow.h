@@ -22,5 +22,11 @@ private:
 
 private slots:
     void adding_task();
+
+    void deleteing_task();
+
+    void edit_task();
+
+    void on_task_selection_changed();
 };
 #endif // MAINWINDOW_H

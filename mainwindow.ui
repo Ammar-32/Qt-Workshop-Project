@@ -22,6 +22,9 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+        </property>
         <property name="columnCount">
          <number>3</number>
         </property>
