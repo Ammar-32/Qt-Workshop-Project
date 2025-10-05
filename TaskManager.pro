@@ -13,13 +13,15 @@ SOURCES += \
     addtask.cpp \
     main.cpp \
     mainwindow.cpp \
-    task.cpp
+    task.cpp \
+    taskdata.cpp
 
 HEADERS += \
     Edit_task_widget.h \
     addtask.h \
     mainwindow.h \
-    task.h
+    task.h \
+    taskdata.h
 
 FORMS += \
     Edit_task_widget.ui \

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <qsettings.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,9 +27,12 @@ private slots:
     void on_deleteButton_clicked();
 
     void on_editButton_clicked();
+    void loadTasks();
+    void saveTasks();
 
 private:
     void updateButtonsState();
+    QSettings *settings;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H
