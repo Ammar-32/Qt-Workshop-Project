@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    task_h_ptr = new TaskHandler();
     setWindowTitle("Task Manager");
     ui->edit_button->setEnabled(false);
     ui->delete_button->setEnabled(false);
@@ -20,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
         ->setSectionResizeMode(1, QHeaderView::ResizeToContents); // Due Date
     ui->table_tasks->horizontalHeader()
         ->setSectionResizeMode(2, QHeaderView::ResizeToContents); // Done checkbox
+    ui->table_tasks->setSelectionBehavior(QAbstractItemView::SelectRows);
     connect(ui->add_button, &QPushButton::clicked, this, &MainWindow::adding_task);
     connect(ui->delete_button, &QPushButton::clicked, this, &MainWindow::deleteing_task);
     connect(ui->edit_button, &QPushButton::clicked, this, &MainWindow::edit_task);
@@ -27,11 +29,15 @@ MainWindow::MainWindow(QWidget *parent)
             &QTableWidget::itemSelectionChanged,
             this,
             &MainWindow::on_task_selection_changed);
+    connect(this, &MainWindow::table_updated, task_h_ptr, &TaskHandler::save_current_table);
+    task_h_ptr->load_tasks(ui->table_tasks);
 }
 
 MainWindow::~MainWindow()
 {
+    emit table_updated(ui->table_tasks);
     delete ui;
+    delete task_h_ptr;
 }
 
 void MainWindow::adding_task()
