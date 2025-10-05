@@ -10,10 +10,15 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    taskmanager.cpp \
+    addtaskdialog.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    task.h \
+    taskmanager.h \
+    addtaskdialog.h
 
 FORMS += \
     mainwindow.ui
