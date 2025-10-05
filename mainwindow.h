@@ -23,6 +23,8 @@ private:
 
     TaskHandler *task_h_ptr;
 
+    void populate_table_from_model();
+
 private slots:
     void adding_task();
 
@@ -32,7 +34,6 @@ private slots:
 
     void on_task_selection_changed();
 
-signals:
-    void table_updated(QTableWidget *table);
+    void on_table_item_changed(QTableWidgetItem *item);
 };
 #endif // MAINWINDOW_H

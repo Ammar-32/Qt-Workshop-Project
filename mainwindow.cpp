@@ -29,15 +29,33 @@ MainWindow::MainWindow(QWidget *parent)
             &QTableWidget::itemSelectionChanged,
             this,
             &MainWindow::on_task_selection_changed);
-    connect(this, &MainWindow::table_updated, task_h_ptr, &TaskHandler::save_current_table);
-    task_h_ptr->load_tasks(ui->table_tasks);
+    connect(ui->table_tasks, &QTableWidget::itemChanged,this, &MainWindow::on_table_item_changed);
+    populate_table_from_model();
+
 }
 
 MainWindow::~MainWindow()
 {
-    emit table_updated(ui->table_tasks);
     delete ui;
     delete task_h_ptr;
+}
+
+void MainWindow::populate_table_from_model()
+{
+    ui->table_tasks->setRowCount(0); // clear table
+
+    const QVector<Task> &tasks = task_h_ptr->get_tasks();
+    for (int i = 0; i < tasks.size(); ++i) {
+        const Task &t = tasks[i];
+        int row = ui->table_tasks->rowCount();
+        ui->table_tasks->insertRow(row);
+
+        ui->table_tasks->setItem(row, 0, new QTableWidgetItem(t.get_name()));
+        ui->table_tasks->setItem(row, 1, new QTableWidgetItem(t.get_date().toString("dd/MM/yyyy")));
+        QTableWidgetItem *doneItem = new QTableWidgetItem();
+        doneItem->setCheckState(t.get_is_done() ? Qt::Checked : Qt::Unchecked);
+        ui->table_tasks->setItem(row, 2, doneItem);
+    }
 }
 
 void MainWindow::adding_task()
@@ -58,6 +76,9 @@ void MainWindow::adding_task()
         QTableWidgetItem *doneItem = new QTableWidgetItem();
         doneItem->setCheckState(Qt::Unchecked);
         ui->table_tasks->setItem(current_row_count, 2, doneItem);
+
+        Task newTask(ptr->task_name(), ptr->due_date(), false);
+        task_h_ptr->add_task(newTask);
     }
 }
 
@@ -77,6 +98,7 @@ void MainWindow::deleteing_task()
 
     if (reply == QMessageBox::Yes) {
         ui->table_tasks->removeRow(row);
+        task_h_ptr->delete_task(row);
     }
 }
 
@@ -84,6 +106,8 @@ void MainWindow::edit_task()
 {
     int row = ui->table_tasks->currentRow();
     if (row < 0) return;
+
+    const Task &old_task = task_h_ptr->get_tasks().at(row);
 
     // Get current values from the table
     QString currentName = ui->table_tasks->item(row, 0)->text();
@@ -99,6 +123,8 @@ void MainWindow::edit_task()
         // Update the row with new values
         ui->table_tasks->item(row, 0)->setText(dialog->task_name());
         ui->table_tasks->item(row, 1)->setText(dialog->due_date().toString("dd/MM/yyyy"));
+        Task updated(dialog->task_name(), dialog->due_date(), old_task.get_is_done());
+        task_h_ptr->edit_task(row, updated);
     }
 }
 
@@ -109,4 +135,18 @@ void MainWindow::on_task_selection_changed()
 
     ui->edit_button->setEnabled(is_selected);
     ui->delete_button->setEnabled(is_selected);
+}
+
+void MainWindow::on_table_item_changed(QTableWidgetItem *item)
+{
+    int row = item->row();
+    if (row < 0 || row >= task_h_ptr->get_tasks().size()) {
+        return;
+    }
+    if (item->column() == 2) {
+        bool done = (item->checkState() == Qt::Checked);
+        const Task &old_task = task_h_ptr->get_tasks().at(row);
+        Task updated(old_task.get_name(), old_task.get_date(), done);
+        task_h_ptr->edit_task(row, updated);
+    }
 }

@@ -1,5 +1,6 @@
 #include "task_handler.h"
 #include "ui_task_handler.h"
+#include <QDebug>
 
 TaskHandler::TaskHandler(QWidget *parent)
     : QDialog(parent)
@@ -7,56 +8,72 @@ TaskHandler::TaskHandler(QWidget *parent)
 {
     ui->setupUi(this);
     settings = new QSettings(QSettings::IniFormat,QSettings::UserScope,"MyOrg","TaskOrganizer");
+    load_tasks();
 
 }
 
 TaskHandler::~TaskHandler()
 {
+    save_tasks();
     delete ui;
     delete settings;
 }
 
-void TaskHandler::load_tasks(QTableWidget *table)
+void TaskHandler::add_task(Task task)
 {
-    settings->beginGroup("Tasks");
-    int rows = settings->value("rowCount", 0).toInt();
+    tasks_list.append(task);
+}
 
-    table->setRowCount(0);
-    for (int i = 0; i < rows; ++i) {
-        table->insertRow(i);
-
-        QString name = settings->value(QString("task%1/name").arg(i)).toString();
-        QString date = settings->value(QString("task%1/date").arg(i)).toString();
-        bool done = settings->value(QString("task%1/done").arg(i)).toBool();
-
-        table->setItem(i, 0, new QTableWidgetItem(name));
-        table->setItem(i, 1, new QTableWidgetItem(date));
-
-        QTableWidgetItem *doneItem = new QTableWidgetItem();
-        doneItem->setCheckState(done ? Qt::Checked : Qt::Unchecked);
-        table->setItem(i, 2, doneItem);
+void TaskHandler::delete_task(int index)
+{
+    if (index >= 0 && index < tasks_list.size())
+    {
+        tasks_list.removeAt(index);
     }
-    settings->endGroup();
+}
+
+void TaskHandler::edit_task(int index, const Task &task)
+{
+    if (index >= 0 && index < tasks_list.size())
+    {
+        tasks_list[index] = task;
+    }
+}
+
+void TaskHandler::load_tasks()
+{
+    int size = settings->beginReadArray("Tasks");
+    tasks_list.clear();
+
+    for (int i = 0; i < size; ++i) {
+        settings->setArrayIndex(i);
+        QString name = settings->value("Name").toString();
+        QDate dueDate = QDate::fromString(settings->value("DueDate").toString(), Qt::ISODate);
+        bool done = settings->value("Done").toBool();
+
+        tasks_list.push_back(Task(name, dueDate, done));
+    }
+
+    settings->endArray();
 
 }
 
-void TaskHandler::save_current_table(QTableWidget *table)
+void TaskHandler::save_tasks()
 {
-    if (!table) {
-        return;
+    settings->beginWriteArray("Tasks");
+    for (int i = 0; i < tasks_list.size(); ++i) {
+        settings->setArrayIndex(i);
+        const Task &task = tasks_list[i];
+        settings->setValue("Name", task.get_name());
+        settings->setValue("DueDate", task.get_date().toString(Qt::ISODate));
+        settings->setValue("Done", task.get_is_done());
     }
-
-    settings->beginGroup("Tasks");
-    settings->remove("");  // clear old data
-
-    settings->setValue("rowCount", table->rowCount());
-    for (int i = 0; i < table->rowCount(); ++i) {
-        settings->setValue(QString("task%1/name").arg(i), table->item(i, 0)->text());
-        settings->setValue(QString("task%1/date").arg(i), table->item(i, 1)->text());
-        settings->setValue(QString("task%1/done").arg(i),
-                           table->item(i, 2)->checkState() == Qt::Checked);
-    }
-    settings->endGroup();
-
+    settings->endArray();
     settings->sync();
+
+}
+
+const QVector<Task> &TaskHandler::get_tasks() const
+{
+    return tasks_list;
 }

@@ -14,17 +14,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     $$PWD/sources/*.cpp \
-    # task_handler.cpp
 
 HEADERS += \
     mainwindow.h \
     $$PWD/headers/*.h \
-    # task_handler.h
 
 FORMS += \
     mainwindow.ui \
     $$PWD/ui/*.ui \
-    # task_handler.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

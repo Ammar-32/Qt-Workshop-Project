@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QSettings>
 #include <QTableWidget>
+#include "task.h"
+#include <QVector>
 
 namespace Ui {
 class TaskHandler;
@@ -15,16 +17,27 @@ class TaskHandler : public QDialog
 
 public:
     explicit TaskHandler(QWidget *parent = nullptr);
+
     ~TaskHandler();
-    void load_tasks(QTableWidget *table);
+
+    void add_task(Task task);
+
+    void delete_task(int index);
+
+    void edit_task(int index, const Task &task);
+
+    const QVector<Task> &get_tasks() const;
 
 private:
     Ui::TaskHandler *ui;
 
     QSettings *settings;
 
-public slots:
-    void save_current_table(QTableWidget *table);
+    QVector<Task> tasks_list;
+
+    void load_tasks();
+
+    void save_tasks();
 
 };
 
