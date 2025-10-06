@@ -1,18 +1,25 @@
 #include "taskmanager.h"
+#include "androidsound.h"
 #include <QStandardPaths>
 #include <QDir>
 #include <QDebug>
 
 TaskManager::TaskManager(QObject *parent)
     : QObject(parent)
+    , m_androidSound(nullptr)
 {
     initializeFilePath();
+    initializeAndroidSound();
     loadTasks();
 }
 
 void TaskManager::initializeFilePath()
 {
+#ifdef Q_OS_ANDROID
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#else
+    QString dataPath = "C:/Users/ayankan";
+#endif
     QDir dir;
     if (!dir.exists(dataPath)) {
         dir.mkpath(dataPath);
@@ -24,6 +31,12 @@ void TaskManager::addTask(const Task& task)
 {
     m_tasks.append(task);
     saveTasks();
+    
+    // Play sound when task is created (Android only)
+    if (m_androidSound) {
+        m_androidSound->playTaskCreatedSound();
+    }
+    
     emit tasksChanged();
 }
 
@@ -91,4 +104,15 @@ bool TaskManager::saveTasks()
     
     qDebug() << "Saved" << m_tasks.size() << "tasks to" << m_filePath;
     return true;
+}
+
+void TaskManager::initializeAndroidSound()
+{
+    // Only initialize Android sound on Android platform
+    #ifdef Q_OS_ANDROID
+    m_androidSound = new AndroidSound(this);
+    qDebug() << "TaskManager: Android sound initialized";
+    #else
+    qDebug() << "TaskManager: Not on Android platform - sound disabled";
+    #endif
 }

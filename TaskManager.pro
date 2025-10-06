@@ -2,6 +2,8 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
 CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -12,13 +14,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     taskmanager.cpp \
-    addtaskdialog.cpp
+    addtaskdialog.cpp \
+    androidsound.cpp
 
 HEADERS += \
     mainwindow.h \
     task.h \
     taskmanager.h \
-    addtaskdialog.h
+    addtaskdialog.h \
+    androidsound.h
 
 FORMS += \
     mainwindow.ui

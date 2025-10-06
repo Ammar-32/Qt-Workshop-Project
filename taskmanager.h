@@ -7,6 +7,9 @@
 #include <QSettings>
 #include "task.h"
 
+// Forward declaration for Android sound functionality
+class AndroidSound;
+
 class TaskManager : public QObject
 {
     Q_OBJECT
@@ -35,8 +38,10 @@ signals:
 private:
     QList<Task> m_tasks;
     QString m_filePath;
+    AndroidSound *m_androidSound;  // For playing sounds on Android
     
     void initializeFilePath();
+    void initializeAndroidSound();
 };
 
 #endif // TASKMANAGER_H
